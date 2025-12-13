@@ -1,0 +1,23 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute ssh ca1-vm \
+          --zone=europe-west1-b \
+          --command "
+            set -e
+            cd /var/www/app || exit 1
+
+            if [ ! -d .git ]; then
+              git clone https://github.com/aripzuan/YOUR_REPO.git .
+            else
+              git pull
+            fi
+
+            npm install
+            pm2 start index.js --name ca1-app || pm2 restart ca1-app
+          "
+
+timeout: "1200s"
