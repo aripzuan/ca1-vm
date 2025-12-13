@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-  res.send("CA1 VM Deployment is running successfully 🚀");
+  res.send("CA1 VM deployment via Cloud Build is LIVE 🚀");
 });
 
 app.get("/health", (req, res) => {
