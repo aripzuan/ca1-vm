@@ -11,7 +11,7 @@ steps:
             cd /var/www/app || exit 1
 
             if [ ! -d .git ]; then
-              git clone https://github.com/aripzuan/YOUR_REPO.git .
+              git clone https://github.com/aripzuan/ca1-vm.git .
             else
               git pull
             fi
@@ -21,3 +21,6 @@ steps:
           "
 
 timeout: "1200s"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
