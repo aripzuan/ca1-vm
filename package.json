@@ -1,0 +1,12 @@
+{
+  "name": "ca1-vm-node-app",
+  "version": "1.0.0",
+  "description": "Simple Node.js app for CA1 VM deployment",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
