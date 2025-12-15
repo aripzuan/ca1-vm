@@ -1,31 +1,21 @@
 steps:
+  # Step 1: Demonstrate Secret Manager integration
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
         set -e
-
         echo "Accessing secret from Secret Manager"
         gcloud secrets versions access latest --secret=demo-secret
 
-        echo "Deploying application to VM"
-        gcloud compute ssh ca1-vm \
-          --tunnel-through-iap \
-          --zone=europe-west1-b \
-          --command "
-            set -e
-            cd /var/www/app || exit 1
-
-            if [ ! -d .git ]; then
-              git clone https://github.com/aripzuan/ca1-vm.git .
-            else
-              git pull
-            fi
-
-            npm install
-            pm2 start index.js --name ca1-app || pm2 restart ca1-app
-          "
+  # Step 2: Deployment placeholder (documented deployment)
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "Deployment handled by Compute Engine VM runtime (pm2)"
 
 timeout: "1200s"
 
