@@ -4,6 +4,12 @@ steps:
     args:
       - -c
       - |
+        set -e
+
+        echo "Accessing secret from Secret Manager"
+        gcloud secrets versions access latest --secret=demo-config
+
+        echo "Deploying application to VM"
         gcloud compute ssh ca1-vm \
           --zone=europe-west1-b \
           --command "
