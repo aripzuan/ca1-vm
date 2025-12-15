@@ -11,6 +11,7 @@ steps:
 
         echo "Deploying application to VM"
         gcloud compute ssh ca1-vm \
+          --tunnel-through-iap \
           --zone=europe-west1-b \
           --command "
             set -e
