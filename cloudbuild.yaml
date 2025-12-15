@@ -7,7 +7,7 @@ steps:
         set -e
 
         echo "Accessing secret from Secret Manager"
-        gcloud secrets versions access latest --secret=demo-config
+        gcloud secrets versions access latest --secret=demo-secret
 
         echo "Deploying application to VM"
         gcloud compute ssh ca1-vm \
