@@ -10,8 +10,12 @@ steps:
           --command="
             sudo gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             sudo chown arridz03_gmail_com:arridz03_gmail_com /var/www/app/test1.txt &&
-            export TEST_FILE_PATH=/var/www/app/test1.txt &&
+
+            git config --global --add safe.directory /var/www/app &&
+
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
+            export TEST_FILE_PATH=/var/www/app/test1.txt &&
+
             cd /var/www/app &&
             git pull origin main &&
             npm install &&
