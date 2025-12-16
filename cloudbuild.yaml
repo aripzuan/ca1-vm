@@ -1,27 +1,4 @@
 steps:
-  # Step 0: Clean staging directory on VM
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud compute ssh ca1-vm \
-          --zone=europe-west1-b \
-          --quiet \
-          --command="sudo rm -rf /tmp/app && mkdir -p /tmp/app"
-
-  # Step 1: Copy source code (EXCLUDE .git)
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        rsync -av --exclude='.git' ./ \
-          ca1-vm:/tmp/app \
-          --rsh="ssh -o StrictHostKeyChecking=no" \
-          --progress
-
-  # Step 2: Deploy & run app
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -31,18 +8,15 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
-            sudo rm -rf /var/www/app &&
-            sudo mkdir -p /var/www/app &&
-            sudo cp -r /tmp/app/* /var/www/app/ &&
-            sudo chown -R $(whoami):$(whoami) /var/www/app &&
+            cd /var/www/app &&
+            git pull origin main &&
 
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
 
-            cd /var/www/app &&
             npm install &&
-            pm2 restart app --update-env || pm2 start /var/www/app/index.js --name app
+            pm2 restart app --update-env
           "
 
 timeout: "1200s"
