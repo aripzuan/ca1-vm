@@ -32,7 +32,7 @@ steps:
 
             cd /var/www/app &&
             npm install &&
-            pm2 restart app --update-env || pm2 start index.js --name app
+            pm2 restart app --update-env || pm2 start /var/www/app/index.js --name app
           "
 
 timeout: "1200s"
