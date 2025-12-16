@@ -4,10 +4,6 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Injected by Cloud Build
-
-const filePath = process.env.TEST_FILE_PATH;
-
 app.get("/", (req, res) => {
   const secret = process.env.DEMO_SECRET;
 
@@ -20,6 +16,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/storage", (req, res) => {
+  const filePath = process.env.TEST_FILE_PATH;
+
   if (!filePath) {
     return res.status(500).send("Storage file path not set");
   }
