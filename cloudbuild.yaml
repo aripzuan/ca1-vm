@@ -8,13 +8,20 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
+            # 1. Copy file from Cloud Storage as root
             sudo gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
-            sudo chown arridz03_gmail_com:arridz03_gmail_com /var/www/app/test1.txt &&
 
+            # 2. FIX permissions
+            sudo chown -R arridz03_gmail_com:arridz03_gmail_com /var/www/app &&
+
+            # 3. Tell Git this directory is safe
             git config --global --add safe.directory /var/www/app &&
+
+            # 4. Export secrets and file path
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
 
+            # 5. Deploy application
             cd /var/www/app &&
             git pull origin main &&
             npm install &&
