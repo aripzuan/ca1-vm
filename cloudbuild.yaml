@@ -1,5 +1,16 @@
 steps:
-  # STEP 1: Copy source code to VM HOME directory
+  # Step 1: Ensure target directory exists on VM
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute ssh ca1-vm \
+          --zone=europe-west1-b \
+          --quiet \
+          --command="mkdir -p /home/arridz03_gmail_com/app"
+
+  # Step 2: Copy source code to VM home directory
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -11,7 +22,7 @@ steps:
           --zone=europe-west1-b \
           --quiet
 
-  # STEP 2: Deploy from HOME → /var/www/app
+  # Step 3: Deploy & run app
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -23,7 +34,7 @@ steps:
           --command="
             sudo rm -rf /var/www/app &&
             sudo mkdir -p /var/www/app &&
-            sudo rsync -a /home/arridz03_gmail_com/app/ /var/www/app/ &&
+            sudo cp -r /home/arridz03_gmail_com/app/* /var/www/app/ &&
             sudo chown -R arridz03_gmail_com:arridz03_gmail_com /var/www/app &&
 
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
