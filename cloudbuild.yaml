@@ -1,21 +1,17 @@
 steps:
-  # 1. Copy source code to VM (NO git)
+  # STEP 1: Copy source code to VM HOME directory
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
-        gcloud compute ssh ca1-vm \
-          --zone=europe-west1-b \
-          --quiet \
-          --command="rm -rf /var/www/app/*"
-
         gcloud compute scp \
           --recurse . \
-          ca1-vm:/var/www/app \
-          --zone=europe-west1-b
+          ca1-vm:/home/arridz03_gmail_com/app \
+          --zone=europe-west1-b \
+          --quiet
 
-  # 2. Run app with secrets & storage
+  # STEP 2: Deploy from HOME → /var/www/app
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -25,9 +21,15 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
+            sudo rm -rf /var/www/app &&
+            sudo mkdir -p /var/www/app &&
+            sudo rsync -a /home/arridz03_gmail_com/app/ /var/www/app/ &&
+            sudo chown -R arridz03_gmail_com:arridz03_gmail_com /var/www/app &&
+
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
+
             cd /var/www/app &&
             npm install &&
             pm2 restart app --update-env || pm2 start index.js --name app
