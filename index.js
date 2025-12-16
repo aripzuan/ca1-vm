@@ -5,13 +5,17 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Injected by Cloud Build
-const secret = process.env.DEMO_SECRET || "SECRET_NOT_SET";
+
 const filePath = process.env.TEST_FILE_PATH;
 
 app.get("/", (req, res) => {
+  const secret = process.env.DEMO_SECRET;
+
   res.send(`
-    <h2>CA1 VM Deployment</h2>
-    <p><strong>Secret:</strong> ${secret}</p>
+    CA1 VM deployment via Cloud Build is LIVE<br/><br/>
+    <strong>Secret from Secret Manager:</strong> ${
+      secret ? secret : "Secret not loaded"
+    }
   `);
 });
 
