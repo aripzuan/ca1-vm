@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   const secret = process.env.DEMO_SECRET;
 
   res.send(`
-    Final Testing for CA1 VM deployment via Cloud Build is LIVE<br/><br/>
+    Final testing for CA1 VM deployment via Cloud Build is live! Created by 10632654@Ariff<br/><br/>
     <strong>Secret from Secret Manager:</strong> ${
       secret ? secret : "Secret not loaded"
     }
