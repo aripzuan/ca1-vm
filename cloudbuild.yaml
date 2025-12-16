@@ -1,16 +1,5 @@
 steps:
-  # Step 1: Ensure target directory exists on VM
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud compute ssh ca1-vm \
-          --zone=europe-west1-b \
-          --quiet \
-          --command="mkdir -p /home/arridz03_gmail_com/app"
-
-  # Step 2: Copy source code to VM home directory
+  # Step 1: Copy source code to /tmp on VM (always writable)
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -18,11 +7,11 @@ steps:
       - |
         gcloud compute scp \
           --recurse . \
-          ca1-vm:/home/arridz03_gmail_com/app \
+          ca1-vm:/tmp/app \
           --zone=europe-west1-b \
           --quiet
 
-  # Step 3: Deploy & run app
+  # Step 2: Deploy and run app
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -34,8 +23,8 @@ steps:
           --command="
             sudo rm -rf /var/www/app &&
             sudo mkdir -p /var/www/app &&
-            sudo cp -r /home/arridz03_gmail_com/app/* /var/www/app/ &&
-            sudo chown -R arridz03_gmail_com:arridz03_gmail_com /var/www/app &&
+            sudo cp -r /tmp/app/* /var/www/app/ &&
+            sudo chown -R $(whoami):$(whoami) /var/www/app &&
 
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
