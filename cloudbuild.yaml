@@ -10,31 +10,22 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
-            set -e
+            sudo -u arridz03_gmail_com bash -c '
+              set -e
+              cd /var/www/app
 
-            # Go to app directory
-            cd /var/www/app
+              git pull origin main
+              npm install
 
-            # Pull latest code from GitHub
-            git pull origin main
+              export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret)
 
-            # Install/update dependencies (CRITICAL)
-            npm install
+              gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt
+              export TEST_FILE_PATH=/var/www/app/test1.txt
 
-            # Load secret from Secret Manager
-            export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret)
-
-            # Retrieve file from Cloud Storage
-            gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt
-            export TEST_FILE_PATH=/var/www/app/test1.txt
-
-            # Kill any stray Node processes (safety)
-            sudo lsof -t -i :3000 | xargs -r sudo kill -9 || true
-
-            # Restart application using PM2
-            pm2 delete app || true
-            pm2 start index.js --name app --update-env
-            pm2 save
+              pm2 delete app || true
+              pm2 start index.js --name app --update-env
+              pm2 save
+            '
           "
 
 timeout: "1200s"
