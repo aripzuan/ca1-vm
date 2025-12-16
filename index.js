@@ -11,7 +11,12 @@ const secret = process.env.DEMO_SECRET;
 const filePath = process.env.TEST_FILE_PATH;
 
 app.get("/", (req, res) => {
-  res.send("CA1 VM deployment via Cloud Build is LIVE");
+  res.send(`
+    CA1 VM deployment via Cloud Build is LIVE<br/><br/>
+    <strong>Secret from Secret Manager:</strong> ${
+      secret || "Secret not loaded"
+    }
+  `);
 });
 
 app.get("/health", (req, res) => {
