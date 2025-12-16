@@ -1,17 +1,27 @@
 steps:
-  # Step 1: Copy source code to /tmp on VM (always writable)
+  # Step 0: Clean staging directory on VM
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
-        gcloud compute scp \
-          --recurse . \
-          ca1-vm:/tmp/app \
+        gcloud compute ssh ca1-vm \
           --zone=europe-west1-b \
-          --quiet
+          --quiet \
+          --command="sudo rm -rf /tmp/app && mkdir -p /tmp/app"
 
-  # Step 2: Deploy and run app
+  # Step 1: Copy source code (EXCLUDE .git)
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        rsync -av --exclude='.git' ./ \
+          ca1-vm:/tmp/app \
+          --rsh="ssh -o StrictHostKeyChecking=no" \
+          --progress
+
+  # Step 2: Deploy & run app
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
