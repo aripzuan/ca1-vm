@@ -4,16 +4,37 @@ steps:
     args:
       - -c
       - |
+        set -e
+
         gcloud compute ssh ca1-vm \
           --zone=europe-west1-b \
           --quiet \
           --command="
-            cd /var/www/app && \
-            git pull origin main && \
-            export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) && \
-            gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt && \
-            export TEST_FILE_PATH=/var/www/app/test1.txt && \
-            pm2 restart app --update-env || pm2 start index.js --name app
+            set -e
+
+            # Go to app directory
+            cd /var/www/app
+
+            # Pull latest code from GitHub
+            git pull origin main
+
+            # Install/update dependencies (CRITICAL)
+            npm install
+
+            # Load secret from Secret Manager
+            export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret)
+
+            # Retrieve file from Cloud Storage
+            gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt
+            export TEST_FILE_PATH=/var/www/app/test1.txt
+
+            # Kill any stray Node processes (safety)
+            sudo lsof -t -i :3000 | xargs -r sudo kill -9 || true
+
+            # Restart application using PM2
+            pm2 delete app || true
+            pm2 start index.js --name app --update-env
+            pm2 save
           "
 
 timeout: "1200s"
