@@ -8,14 +8,9 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
-            cd /var/www/app &&
-            git pull origin main &&
-
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
-
-            npm install &&
             pm2 restart app --update-env
           "
 

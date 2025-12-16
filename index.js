@@ -1,29 +1,20 @@
 const express = require("express");
 const fs = require("fs");
-const app = express();
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Secret from Secret Manager
-const secret = process.env.DEMO_SECRET;
-
-// File from Cloud Storage
+// Injected by Cloud Build
+const secret = process.env.DEMO_SECRET || "SECRET_NOT_SET";
 const filePath = process.env.TEST_FILE_PATH;
 
 app.get("/", (req, res) => {
   res.send(`
-    CA1 VM deployment via Cloud Build is LIVE<br/><br/>
-    <strong>Secret from Secret Manager:</strong> ${
-      secret || "Secret not loaded"
-    }
+    <h2>CA1 VM Deployment</h2>
+    <p><strong>Secret:</strong> ${secret}</p>
   `);
 });
 
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
-
-// Show Cloud Storage file content
 app.get("/storage", (req, res) => {
   if (!filePath) {
     return res.status(500).send("Storage file path not set");
@@ -33,8 +24,12 @@ app.get("/storage", (req, res) => {
     if (err) {
       return res.status(500).send("Unable to read storage file");
     }
-    res.send(`Cloud Storage file content: ${data}`);
+    res.send(`<pre>${data}</pre>`);
   });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
 });
 
 app.listen(PORT, "0.0.0.0", () => {
