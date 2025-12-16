@@ -1,4 +1,21 @@
 steps:
+  # 1. Copy source code to VM (NO git)
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute ssh ca1-vm \
+          --zone=europe-west1-b \
+          --quiet \
+          --command="rm -rf /var/www/app/*"
+
+        gcloud compute scp \
+          --recurse . \
+          ca1-vm:/var/www/app \
+          --zone=europe-west1-b
+
+  # 2. Run app with secrets & storage
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
@@ -8,24 +25,12 @@ steps:
           --zone=europe-west1-b \
           --quiet \
           --command="
-            # 1. Copy file from Cloud Storage as root
-            sudo gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
-
-            # 2. FIX permissions
-            sudo chown -R arridz03_gmail_com:arridz03_gmail_com /var/www/app &&
-
-            # 3. Tell Git this directory is safe
-            git config --global --add safe.directory /var/www/app &&
-
-            # 4. Export secrets and file path
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
+            gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
-
-            # 5. Deploy application
             cd /var/www/app &&
-            git pull origin main &&
             npm install &&
-            pm2 restart app --update-env
+            pm2 restart app --update-env || pm2 start index.js --name app
           "
 
 timeout: "1200s"
