@@ -11,7 +11,7 @@ steps:
             export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret) &&
             gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt &&
             export TEST_FILE_PATH=/var/www/app/test1.txt &&
-            pm2 restart app --update-env
+            pm2 restart app --update-env || pm2 start /var/www/app/index.js --name app
           "
 
 timeout: "1200s"
