@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   const secret = process.env.DEMO_SECRET;
 
   res.send(`
-    Very last testing for auto deployment! Created by 10632654@Ariff<br/><br/>
+   Demo day! Created by 10632654@Ariff<br/><br/>
     <strong>Secret from Secret Manager:</strong> ${
       secret ? secret : "Secret not loaded"
     }
