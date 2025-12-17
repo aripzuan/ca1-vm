@@ -19,8 +19,8 @@ steps:
 
               export DEMO_SECRET=\$(gcloud secrets versions access latest --secret=demo-secret)
 
-              gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/test1.txt
-              export TEST_FILE_PATH=/var/www/app/test1.txt
+              gsutil cp gs://ca1vm-storage/test1.txt /var/www/app/demo.txt
+              export TEST_FILE_PATH=/var/www/app/demo.txt
 
               pm2 delete app || true
               pm2 start index.js --name app --update-env
